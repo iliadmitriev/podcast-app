@@ -37,5 +37,4 @@ export function authWithEmailAndPassword(email, password) {
     })
         .then(response => response.json())
         .then(data => data.idToken)
-        .catch(e => console.log(e))
 }
