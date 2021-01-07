@@ -40,10 +40,21 @@ function openModal() {
 
 function authFormHandler(ev) {
     ev.preventDefault()
+    const btnSubmit = ev.target.querySelector('button')
     const email = ev.target.querySelector('#email').value
     const password = ev.target.querySelector('#password').value
+
+    btnSubmit.disabled = true
     authWithEmailAndPassword(email, password)
-        .then(token => {
-            console.log(token)
-        })
+        .then(Question.fetch)
+        .then(renderModalAfterAuth)
+        .finally(() => btnSubmit.disabled = false)
+}
+
+function renderModalAfterAuth(content) {
+    if (typeof content === 'string') {
+        createModal('Ошибка', content)
+    } else {
+        createModal('Список вопросов', Question.listToHTML(content))
+    }
 }
