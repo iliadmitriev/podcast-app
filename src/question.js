@@ -19,6 +19,25 @@ export class Question {
             .catch()
     }
     
+    static fetch(token) {
+        if (!token) {
+            return Promise.resolve('<p class="error">Ошибка: не верный логин или пароль</p>')
+        }
+        return fetch(`https://podcast-app-idm-default-rtdb.firebaseio.com/question.json?auth=${token}`)
+            .then(response => response.json())
+            .then(response => {
+                if (response && response.error) {
+                    return `<p class="error">${response.error}</p>`
+                }
+                return response
+                    ? Object.keys(response).map(key => ({
+                        id: key,
+                        ...response[key]
+                    }))
+                    : []
+            })
+    }
+    
     static renderList() {
         const questions = _getQuestionsFromLocalStorage()
         const html = questions.length
@@ -26,6 +45,12 @@ export class Question {
             : `<div class="mui--text-headline">Нет вопросов</div>`
         const list = document.getElementById('list')
         list.innerHTML = html
+    }
+    
+    static listToHTML(questions) {
+        return questions.length
+            ? `<ol>${questions.map(q => `<li>${q.text}</li>`).join('')}</ol>`
+            : '<p>Вопросов нет</p>'
     }
 }
 
